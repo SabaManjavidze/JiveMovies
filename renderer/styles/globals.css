@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* body {
+  margin: 0;
+} */
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    --color-palette-primary: 238, 40, 138;
+    --color-palette-light-primary: 242, 90, 163;
+    --color-palette-secondary: 59, 130, 246;
+    --color-palette-light-secondary: 191 219 254;
+    --color-palette-danger: 224, 71, 46;
+    --color-palette-disable: 124, 124, 124;
+    --color-text-base: 201, 209, 217;
+    --color-background-secondary: 31, 42, 68;
+    --color-background-main: 15, 23, 42;
+  }
+}
+@font-face {
+  font-family: "Virgil";
+  src: url("../public/fonts/Virgil.woff2");
+}
