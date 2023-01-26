@@ -1,20 +1,27 @@
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { GiSharpSmile } from "react-icons/gi";
 import Link from "next/link";
-import logo from "../public/images/logo.png";
 import Image from "next/image";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { RouterInputs } from "../src/server/router/router";
 import { useRouter } from "next/router";
 
 type NavBarPropType = {
-  getMovies: ({}: RouterInputs["movie"]["getMovieByQuery"]) => {};
+  getMovies?: ({}: RouterInputs["movie"]["getMovieByKeyword"]) => {};
 };
 const Navbar = ({ getMovies }: NavBarPropType) => {
   const [showSearch, setShowSearch] = useState(false);
   const [divRef] = useAutoAnimate<HTMLDivElement>();
   const router = useRouter();
 
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key == "Enter" && getMovies) {
+      const query = e.currentTarget.value;
+      getMovies({ query });
+      router.push({ pathname: router.pathname, query: { query } });
+    }
+  };
   return (
     <nav
       className={
@@ -24,13 +31,7 @@ const Navbar = ({ getMovies }: NavBarPropType) => {
     >
       <Link href="/home?query=" className="w-10 h-10">
         <a href="/home?query=haha" className={"font-bold text-white"}>
-          <Image
-            src={logo}
-            alt="Logo"
-            className={"mr-2 object-contain"}
-            height={100}
-            width={100}
-          />
+          <GiSharpSmile className="text-skin-like" size={40} />
         </a>
       </Link>
       <div className="flex items-center">
@@ -58,19 +59,13 @@ const Navbar = ({ getMovies }: NavBarPropType) => {
         </button>
       </div>
       {showSearch && (
-        <div className="bg-skin-secondary absolute top-36 w-4/5 left-1/2 -translate-x-1/2 rounded-lg p-6 mt-2">
+        <div className="z-10 bg-skin-secondary absolute top-36 w-4/5 left-1/2 -translate-x-1/2 rounded-lg p-6 mt-2">
           <input
             className="border-2 border-gray-600 rounded-lg p-1 w-full focus:outline-none 
             focus:border-skin-input-field duration-300 bg-gray-700 text-white"
             type="text"
             placeholder="Search..."
-            onKeyDown={(e) => {
-              if (e.key == "Enter") {
-                const query = e.currentTarget.value;
-                getMovies({ query });
-                router.push({ pathname: router.pathname, query: { query } });
-              }
-            }}
+            onKeyDown={handleSearchSubmit}
           />
         </div>
       )}

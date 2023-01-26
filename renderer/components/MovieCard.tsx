@@ -13,7 +13,10 @@ const max_title_len = 25;
 const MovieCard = ({ title, id, posterUrl, overview }: MovieCardProps) => {
   return (
     <Link href={`/movie/${id}`}>
-      <div className="relative rounded-lg overflow-hidden cursor-pointer hover:scale-105 delay-100 duration-300 flex flex-col items-center">
+      <div
+        className="relative rounded-lg overflow-hidden cursor-pointer 
+       hover:animate-wiggle duration-300 flex flex-col items-center"
+      >
         <h2 className="text-lg font-medium text-white text-center max-w-4/5 break-words">
           {title.slice(0, max_title_len)}{" "}
           {title.length >= max_title_len && "..."}

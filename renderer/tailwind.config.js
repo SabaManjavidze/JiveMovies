@@ -12,13 +12,16 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        wiggle: "wiggle 0.4s ease-in-out",
+        wiggle: "wiggle 0.7s ease-in-out",
         scale: "scale 0.7s ease-in-out",
       },
       keyframes: {
         wiggle: {
-          "0%, 100%": { transform: "rotate(-9deg)" },
-          "50%": { transform: "rotate(9deg)" },
+          "0%": { transform: "rotate(0deg) " },
+          "30%": { transform: "rotate(2deg) scale(1.05)" },
+          "50%": { transform: "rotate(-2deg) " },
+          "70%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(0deg)" },
         },
         scale: {
           "0%": { transform: "scale(1.1)" },

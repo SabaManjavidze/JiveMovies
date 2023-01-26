@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 
 function Home() {
   const { mutateAsync: getMovies, data: movies } =
-    trpc.movie.getMovieByQuery.useMutation();
+    trpc.movie.getMovieByKeyword.useMutation();
   const router = useRouter();
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function Home() {
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-typescript)</title>
+        <title>JiveMovies</title>
       </Head>
       <Navbar getMovies={getMovies} />
       <div className="bg-skin-main">

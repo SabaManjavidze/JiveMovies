@@ -1,10 +1,3 @@
-export type Episode = {
-  id?: string;
-  epName: string;
-  epNumber: string;
-  url?: string;
-};
-
 export interface AdjaraMovie {
   id: number;
   type: string;
@@ -131,3 +124,51 @@ export type VideoObj = {
 };
 
 export type MovieType = "series" | "movies" | "episode";
+
+export interface Episode {
+  episode: number;
+  episodes_include: string;
+  title: string;
+  description: string;
+  rating: number;
+  upcoming: boolean;
+  file_will_be_added_soon: boolean;
+  air_date: any;
+  poster: string;
+  covers: Covers;
+  files: File[];
+}
+
+export type LangType = "ENG" | "GEO" | "RUS";
+export type QualityType = "HIGH" | "MEDIUM" | "LOW";
+
+export interface File {
+  lang: LangType;
+  files: File2[];
+  subtitles: Subtitle[];
+}
+
+export interface File2 {
+  id: number;
+  quality: QualityType;
+  src: string;
+  duration: number;
+  thumbnails: Thumbnail[];
+}
+
+export interface Thumbnail {
+  id: number;
+  url: string;
+  start_time: number;
+  end_time: number;
+  duration: number;
+  interval: number;
+  width: number;
+  height: number;
+  columns: number;
+}
+
+export interface Subtitle {
+  lang: LangType;
+  url: string;
+}
