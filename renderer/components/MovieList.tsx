@@ -18,9 +18,11 @@ const MovieList = ({ movies }: MovieListProps) => {
           id={movie.id}
           title={movie.secondaryName}
           posterUrl={
-            movie?.poster || movie.posters.data[400] || movie.posters.data[200]
+            movie.posters?.data[400] ||
+            movie.posters?.data[200] ||
+            movie?.poster
           }
-          overview={`IMDB : ${movie.rating.imdb.score}`}
+          overview={`IMDB : ${movie.rating?.imdb?.score || "Unknown"}`}
         />
       ))}
     </div>

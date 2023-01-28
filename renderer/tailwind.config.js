@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        wiggle: "wiggle 0.7s ease-in-out",
+        wiggle: "wiggle 0.3s ease-in-out",
         scale: "scale 0.7s ease-in-out",
       },
       keyframes: {

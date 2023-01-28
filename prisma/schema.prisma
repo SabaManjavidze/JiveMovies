@@ -29,9 +29,14 @@ model comment {
   main_comment_id  String? @map("parentId")
 }
 
-model like {
-  value      Int
-  user_id     String  @db.VarChar @map("user_id")
+model user_list_movie {
+  status      status_enum
+  season       Int
+  episode      Int
+  score        Int
+  start_date   DateTime?  @db.Timestamp(6)
+  finish_date  DateTime?  @db.Timestamp(6)
+  user_id      String  @db.VarChar @map("user_id")
   movie_id     String  @db.VarChar @map("movie_id")
   user       user   @relation(fields: [user_id], references: [user_id])
   movie       movie   @relation(fields: [movie_id], references: [movie_id])
@@ -48,7 +53,7 @@ model movie {
   points        Int       @default(0)
   created_at    DateTime  @default(now()) @db.Timestamp(6)
   comments      comment[]
-  like          like[]
+  users         user_list_movie[]
 }
 
 model user {
@@ -63,9 +68,14 @@ model user {
   created_at     DateTime         @default(now()) @db.Timestamp(6)
   accounts       account[]
   comment        comment[]
-  like           like[]
+  movie_list     user_list_movie[]
 }
-
+enum status_enum {
+  PLAN_TO_WATCH
+  WATCHING
+  COMPLETED
+  DROPPED
+}
 enum account_provider_enum {
   GOOGLE
   FACEBOOK

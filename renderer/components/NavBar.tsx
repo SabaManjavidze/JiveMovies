@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { GiSharpSmile } from "react-icons/gi";
 import Link from "next/link";
@@ -11,26 +11,28 @@ import { EMPTY_IMAGE } from "../src/utils/constants";
 import { SyncLoader } from "react-spinners";
 
 type NavBarPropType = {
-  getMovies?: ({}: RouterInputs["movie"]["getMovieByKeyword"]) => {};
+  setQuery?: Dispatch<string>;
+  setPage?: Dispatch<number>;
 };
-const Navbar = ({ getMovies }: NavBarPropType) => {
+const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
   const [showSearch, setShowSearch] = useState(false);
   const [divRef] = useAutoAnimate<HTMLDivElement>();
   const router = useRouter();
   const { data: user, isFetching } = trpc.user.me.useQuery();
 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == "Enter" && getMovies) {
+    if (e.key == "Enter") {
       const query = e.currentTarget.value;
-      getMovies({ query });
+      setQuery(query);
+      setPage(1);
       setShowSearch(false);
-      router.push({ pathname: router.pathname, query: { query } });
+      router.push({ pathname: router.pathname, query: { query, page: 1 } });
     }
   };
   return (
     <nav
       className={
-        "flex relative items-center justify-between bg-skin-secondary p-4 text-white"
+        "flex relative items-center justify-between bg-skin-secondary p-4 text-white "
       }
       ref={divRef}
     >

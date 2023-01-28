@@ -7,6 +7,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Episode } from "../../src/utils/types";
 import Image from "next/image";
 import Head from "next/head";
+import { SyncLoader } from "react-spinners";
 
 interface MovieProps {
   title: string;
@@ -84,14 +85,16 @@ const Movie = ({ title, poster, description }: MovieProps) => {
       <NavBar />
       <div className="flex flex-col items-center bg-skin-main mt-16">
         {isFetching && !movieDetails ? (
-          <h1 className="text-white">loading...</h1>
+          <div className="flex w-full justify-center items-center">
+            <SyncLoader color="pink" size={30} />
+          </div>
         ) : (
           <div className="bg-skin-main flex flex-col items-center w-full">
             <div
               className="relative w-4/5  flex justify-center bg-black"
               ref={divRef}
             >
-              <video src={video} controls />
+              <video className="focus:outline-none" src={video} controls />
               {movieDetails.isTvShow ? (
                 <button
                   className="absolute top-0 right-0 p-5 z-10"
