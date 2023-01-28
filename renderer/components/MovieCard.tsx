@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 type MovieCardProps = {
-  id: string;
+  id: string | number;
   title: string;
   posterUrl: string;
   overview: string;
@@ -12,7 +12,7 @@ type MovieCardProps = {
 const max_title_len = 25;
 const MovieCard = ({ title, id, posterUrl, overview }: MovieCardProps) => {
   return (
-    <Link href={`/movie/${id}`}>
+    <Link href={`/movie/${id}?season=1&episode=0`}>
       <div
         className="relative rounded-lg overflow-hidden cursor-pointer 
        hover:animate-wiggle duration-300 flex flex-col items-center"

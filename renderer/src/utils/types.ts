@@ -23,10 +23,21 @@ export interface AdjaraMovie {
   countries: Countries;
   languages: Languages;
   trailer?: null;
+  seasons: SeasonsType;
   plots: Plots;
   genres: Genres;
   lastSeries: LastSeries;
 }
+export type SeasonsType = {
+  data: SeasonType[];
+};
+export type SeasonType = {
+  movieId: number;
+  number: number;
+  name: string;
+  episodesCount: number;
+  upcomingEpisodesCount: number;
+};
 export interface Rating {
   imdb: ImdbOrImovies;
   imovies: ImdbOrImovies;

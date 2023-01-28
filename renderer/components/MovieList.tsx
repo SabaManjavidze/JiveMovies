@@ -3,7 +3,7 @@ import { AdjaraMovie, Movie } from "../src/utils/types";
 import MovieCard from "./MovieCard";
 
 interface MovieListProps {
-  movies: Movie[];
+  movies: AdjaraMovie[];
 }
 
 const MovieList = ({ movies }: MovieListProps) => {
@@ -14,11 +14,13 @@ const MovieList = ({ movies }: MovieListProps) => {
     >
       {movies?.map((movie) => (
         <MovieCard
-          key={movie.slug}
-          id={movie.slug}
-          title={movie.title}
-          posterUrl={movie.thumbnail_url}
-          overview={"No description"}
+          key={movie.id}
+          id={movie.id}
+          title={movie.secondaryName}
+          posterUrl={
+            movie?.poster || movie.posters.data[400] || movie.posters.data[200]
+          }
+          overview={`IMDB : ${movie.rating.imdb.score}`}
         />
       ))}
     </div>

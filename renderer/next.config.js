@@ -19,6 +19,7 @@ module.exports = {
     PUBLIC_EMAIL: process.env.PUBLIC_EMAIL,
   },
   images: {
+    unoptimized: true,
     domains: [
       "cdn.cdnlogo.com",
       "res.cloudinary.com",

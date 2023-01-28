@@ -11,3 +11,11 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+
+export const UserFragment = {
+  username: true,
+  picture: true,
+  gender: true,
+  age: true,
+  user_id: true,
+};

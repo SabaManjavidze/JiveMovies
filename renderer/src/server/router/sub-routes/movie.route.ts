@@ -4,6 +4,12 @@ import { AdjaraMovie, Episode, Movie } from "../../../utils/types";
 import { procedure, router } from "../trpc";
 
 export const movieRouter = router({
+  getHomePage: procedure.mutation(async () => {
+    const { data: details } = await axios.get(
+      `${process.env.IMOVIE_BASE_URL}/movies?filters[with_files]=yes&filters[type]=movie&sort=-upload_date&page=1&per_page=12`
+    );
+    return details.data as AdjaraMovie[];
+  }),
   getEpisodes: procedure
     .input(
       z.object({
@@ -11,7 +17,7 @@ export const movieRouter = router({
         movieId: z.string().min(1),
       })
     )
-    .mutation(async ({ input: { season, movieId } }) => {
+    .query(async ({ input: { season, movieId } }) => {
       const { data: details } = await axios.get(
         `${process.env.IMOVIE_BASE_URL}/movies/${movieId}/season-files/${season}`
       );

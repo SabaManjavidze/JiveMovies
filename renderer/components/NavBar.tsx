@@ -6,6 +6,9 @@ import Image from "next/image";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { RouterInputs } from "../src/server/router/router";
 import { useRouter } from "next/router";
+import { trpc } from "../src/utils/trpcNext";
+import { EMPTY_IMAGE } from "../src/utils/constants";
+import { SyncLoader } from "react-spinners";
 
 type NavBarPropType = {
   getMovies?: ({}: RouterInputs["movie"]["getMovieByKeyword"]) => {};
@@ -14,18 +17,20 @@ const Navbar = ({ getMovies }: NavBarPropType) => {
   const [showSearch, setShowSearch] = useState(false);
   const [divRef] = useAutoAnimate<HTMLDivElement>();
   const router = useRouter();
+  const { data: user, isFetching } = trpc.user.me.useQuery();
 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key == "Enter" && getMovies) {
       const query = e.currentTarget.value;
       getMovies({ query });
+      setShowSearch(false);
       router.push({ pathname: router.pathname, query: { query } });
     }
   };
   return (
     <nav
       className={
-        "flex relative items-center justify-between bg-skin-secondary p-4"
+        "flex relative items-center justify-between bg-skin-secondary p-4 text-white"
       }
       ref={divRef}
     >
@@ -36,21 +41,35 @@ const Navbar = ({ getMovies }: NavBarPropType) => {
       </Link>
       <div className="flex items-center">
         <Link href="/">
-          <a className="mr-4 text-white hover:text-gray-600">Home</a>
+          <a className="mr-4 text-skin-base duration-150 hover:text-white">
+            Home
+          </a>
         </Link>
         <Link href="/favorite-movies">
-          <a className="mr-4 text-white hover:text-gray-600">Favorite Movies</a>
+          <a className="mr-4 text-skin-base duration-150 hover:text-white">
+            Favorite Movies
+          </a>
         </Link>
-        <button className="flex items-center px-2 py-1 rounded-full text-white bg-gray-900 hover:bg-gray-800">
-          <Image
-            src="https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:good%2Cw_1200/MTE4MDAzNDEwNzg5ODI4MTEw/barack-obama-12782369-1-402.jpg"
-            alt="User"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <span className="ml-2 text-xs">Gela</span>
-        </button>
+        {isFetching ? (
+          <SyncLoader color="pink" size={10} />
+        ) : user ? (
+          <button
+            className="flex items-center px-2 py-1 rounded-full text-white bg-gray-900
+          duration-300 hover:bg-gray-700"
+          >
+            <Image
+              src={user.picture || EMPTY_IMAGE}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <span className="ml-2 text-xl">{user.username}</span>
+          </button>
+        ) : (
+          <Link href="/login">
+            <a className="text-skin-like">Log In</a>
+          </Link>
+        )}
         <button
           className="ml-4 px-2 py-1 rounded-full text-white bg-gray-900 hover:bg-gray-800"
           onClick={() => setShowSearch(!showSearch)}

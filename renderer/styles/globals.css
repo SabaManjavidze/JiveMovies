@@ -22,6 +22,33 @@ html {
     --color-background-main: 15, 23, 42;
   }
 }
+.gradient-text {
+  @apply inline bg-gradient-to-r from-purple-500 via-pink-400 
+  to-purple-500 bg-clip-text tracking-tight text-transparent;
+}
+.outlined-btn {
+  @apply rounded border-2 py-1 duration-200 ease-in-out;
+}
+.filled-btn {
+  @apply rounded-md py-2 duration-200 ease-in-out;
+}
+.shadow {
+  box-shadow: 0px 0px 25px -7px;
+}
+.post-btn-pink {
+  @apply outlined-btn border-skin-submit-btn text-skin-submit-btn shadow hover:bg-skin-submit-btn/10;
+}
+.post-btn-blue {
+  @apply outlined-btn border-skin-attach-btn text-skin-attach-btn shadow hover:bg-skin-attach-btn/20;
+}
+.text-input {
+  @apply block w-full rounded border border-transparent
+  bg-skin-input-field 
+  bg-clip-padding px-4 py-2 font-normal 
+  text-slate-100 transition ease-in-out 
+  focus:border-skin-input-field focus:outline-none
+  active:bg-skin-secondary;
+}
 @font-face {
   font-family: "Virgil";
   src: url("../public/fonts/Virgil.woff2");

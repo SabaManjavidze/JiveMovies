@@ -6,6 +6,7 @@ import { FaBars } from "react-icons/fa";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Episode } from "../../src/utils/types";
 import Image from "next/image";
+import Head from "next/head";
 
 interface MovieProps {
   title: string;
@@ -15,32 +16,49 @@ interface MovieProps {
 
 const Movie = ({ title, poster, description }: MovieProps) => {
   const router = useRouter();
-  const { data: movieDetails, isFetching } = trpc.movie.getMovieById.useQuery({
-    movieId: router.query?.movieId + "",
-  });
   const [showEpisodes, setShowEpisodes] = useState(false);
   const [video, setVideo] = useState("");
   const [divRef] = useAutoAnimate<HTMLDivElement>();
 
-  const {
-    data: episodes,
-    mutateAsync: getEpisodes,
-    isLoading: epsFetching,
-  } = trpc.movie.getEpisodes.useMutation();
+  const { data: movieDetails, isFetching } = trpc.movie.getMovieById.useQuery({
+    movieId: router.query?.movieId + "",
+  });
+
+  const { data: episodes, isLoading: epsFetching } =
+    trpc.movie.getEpisodes.useQuery({
+      movieId: router.query?.movieId?.toString(),
+      season: router.query?.season?.toString() || "1",
+    });
+
   const getVideoFromEpisode = (ep: number | string, episodes: Episode[]) => {
-    const episode = episodes.find(({ episode }) => episode == ep);
+    const episode = episodes[ep];
     const engFile = episode?.files.find((file) => file.lang === "ENG");
     const highRes = engFile?.files.find((file) => file.quality === "HIGH");
     return highRes;
   };
-
+  const handleSeasonClick = (season: number | string) => {
+    router.replace(
+      {
+        pathname: `/movie/${router.query.movieId}`,
+        query: {
+          episode: router.query?.episode || 1,
+          season: season,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   const handleEpisodeClick = (id: number | string) => {
     const highRes = getVideoFromEpisode(id, episodes);
     setVideo(highRes?.src);
     router.push(
       {
-        pathname: router.asPath,
-        query: { episode: id, season: router.query?.season || 1 },
+        pathname: `/movie/${router.query.movieId}`,
+        query: {
+          episode: id,
+          season: router.query?.season || 1,
+        },
       },
       undefined,
       { shallow: true }
@@ -48,52 +66,82 @@ const Movie = ({ title, poster, description }: MovieProps) => {
   };
 
   useEffect(() => {
-    if (!isFetching) {
-      // if (movieDetails.isTvShow) {
-      getEpisodes({
-        movieId: router.query?.movieId + "",
-        season: router.query?.season?.toString() || "1",
-      }).then((res) => {
-        const highRes = getVideoFromEpisode(
-          router.query?.episode?.toString() || 0,
-          res
-        );
-        setVideo(highRes?.src);
-      });
-      // }
+    if (!epsFetching) {
+      console.log(parseInt(router.query?.episode?.toString()) || 0);
+      const highRes = getVideoFromEpisode(
+        parseInt(router.query?.episode?.toString()) || episodes[0]?.episode,
+        episodes
+      );
+      setVideo(highRes?.src);
     }
-  }, [isFetching, router.query]);
+  }, [epsFetching, router.query]);
 
   return (
     <div className="w-full min-h-screen bg-skin-main text-white pb-48">
+      <Head>
+        <title>{movieDetails?.secondaryName} - Jive Movies</title>
+      </Head>
       <NavBar />
-      <div className="flex flex-col items-center bg-skin-main">
+      <div className="flex flex-col items-center bg-skin-main mt-16">
         {isFetching && !movieDetails ? (
           <h1 className="text-white">loading...</h1>
         ) : (
-          <div className="bg-skin-main" ref={divRef}>
-            <div className="relative">
-              <video className="w-full" src={video} controls />
-              <button
-                className="absolute top-0 right-0 p-2 z-10"
-                onClick={() => setShowEpisodes(!showEpisodes)}
-              >
-                <FaBars />
-              </button>
-              {showEpisodes && (
-                <div className="absolute top-0 right-0 w-1/3 h-full bg-gray-800/50 backdrop-blur-sm text-white p-4">
-                  <h2 className="text-2xl font-medium">Episodes</h2>
+          <div className="bg-skin-main flex flex-col items-center w-full">
+            <div
+              className="relative w-4/5  flex justify-center bg-black"
+              ref={divRef}
+            >
+              <video src={video} controls />
+              {movieDetails.isTvShow ? (
+                <button
+                  className="absolute top-0 right-0 p-5 z-10"
+                  onClick={() => setShowEpisodes(!showEpisodes)}
+                >
+                  <FaBars size={40} />
+                </button>
+              ) : null}
+              {movieDetails.isTvShow && showEpisodes && (
+                <div className="absolute top-0 right-0 w-1/3 max-h-full overflow-y-scroll bg-gray-800/50 backdrop-blur-sm text-white p-4">
+                  <h2 className="text-2xl font-medium">Seasons</h2>
+                  <ul className="mt-8 flex">
+                    {epsFetching ? (
+                      <h2>Seasons Loading...</h2>
+                    ) : (
+                      movieDetails.seasons.data?.map((season, index) => (
+                        <li
+                          key={index}
+                          className={`text-xl py-2 cursor-pointer p-3 mx-1 
+                          ${
+                            router.query?.season == season.number + ""
+                              ? "bg-skin-submit-btn"
+                              : "bg-skin-secondary"
+                          }`}
+                          onClick={() => handleSeasonClick(season.number)}
+                        >
+                          <h3>{season.number}</h3>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                  <h2 className="text-2xl font-medium mt-5">Episodes</h2>
                   <ul className="mt-8 ">
                     {epsFetching ? (
                       <h2>Episodes Loading...</h2>
                     ) : (
+                      episodes &&
                       episodes?.map((episode, index) => (
                         <li
                           key={index}
-                          className="text-xl py-2 cursor-pointer"
+                          className={`text-xl py-4 cursor-pointer border-t-[1px]
+                          ${
+                            router.query?.episode == episode.episode + "" &&
+                            "bg-skin-submit-btn/40"
+                          }`}
                           onClick={() => handleEpisodeClick(episode.episode)}
                         >
-                          <h3>{episode.title}</h3>
+                          <h3 className="pl-5">
+                            {episode.episode}. {episode.title}
+                          </h3>
                         </li>
                       ))
                     )}
@@ -122,7 +170,7 @@ const Movie = ({ title, poster, description }: MovieProps) => {
                   {
                     movieDetails.plots?.data.find(
                       (item) => item.language === "ENG"
-                    ).description
+                    )?.description
                   }
                 </p>
               </div>
