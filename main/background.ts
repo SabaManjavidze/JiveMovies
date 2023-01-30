@@ -1,4 +1,11 @@
-import { app } from "electron";
+import {
+  app,
+  globalShortcut,
+  ipcMain,
+  ipcRenderer,
+  Menu,
+  MenuItem,
+} from "electron";
 import serve from "electron-serve";
 import path from "path";
 import { createWindow } from "./helpers";
@@ -27,11 +34,35 @@ const getAssetPath = (...paths: string[]): string => {
     width: 1000,
     height: 600,
   });
+  const port = process.argv[2];
+  const menu = new Menu();
+  menu.append(
+    new MenuItem({
+      label: "Controls",
+      submenu: [
+        {
+          label: "DevTools",
+          accelerator: "Ctrl+Shift+I",
+          click: async (menuItem, browserWindow, event) => {
+            browserWindow.webContents.openDevTools();
+          },
+        },
+        {
+          label: "Search",
+          accelerator: "Ctrl+/",
+          click: async (menuItem, browserWindow, event) => {
+            browserWindow.webContents.send("hello", "your mom is gay");
+          },
+        },
+      ],
+    })
+  );
+
+  Menu.setApplicationMenu(menu);
 
   if (isProd) {
     await mainWindow.loadURL("app://./home.html");
   } else {
-    const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     mainWindow.webContents.openDevTools();
   }

@@ -1,4 +1,4 @@
-import React, { Dispatch, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { GiSharpSmile } from "react-icons/gi";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { trpc } from "../src/utils/trpcNext";
 import { EMPTY_IMAGE } from "../src/utils/constants";
 import { SyncLoader } from "react-spinners";
+import { ipcRenderer } from "electron";
 
 type NavBarPropType = {
   setQuery?: Dispatch<string>;
@@ -16,6 +17,7 @@ type NavBarPropType = {
 };
 const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
   const [showSearch, setShowSearch] = useState(false);
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
   const [divRef] = useAutoAnimate<HTMLDivElement>();
   const router = useRouter();
   const { data: user, isFetching } = trpc.user.me.useQuery();
@@ -29,19 +31,37 @@ const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
       router.push({ pathname: router.pathname, query: { query, page: 1 } });
     }
   };
+  const handleProfileClick = () => setShowProfileOptions(!showProfileOptions);
+
+  useEffect(() => {
+    function handleMessage(e, message) {
+      setShowSearch((shown) => !shown);
+    }
+    ipcRenderer.on("hello", handleMessage);
+    return () => {
+      ipcRenderer.off("hello", handleMessage);
+    };
+  }, []);
+
   return (
     <nav
       className={
-        "flex relative items-center justify-between bg-skin-secondary p-4 text-white "
+        "flex items-center justify-between bg-skin-secondary p-4 text-white "
       }
       ref={divRef}
     >
-      <Link href="/home?query=" className="w-10 h-10">
-        <a href="/home?query=haha" className={"font-bold text-white"}>
+      {showProfileOptions ? (
+        <div
+          onClick={handleProfileClick}
+          className="absolute h-screen right-0 left-0 top-0 bottom-0 w-full z-30"
+        ></div>
+      ) : null}
+      <Link href="/home" className="w-10 h-10">
+        <a href="/home" className={"font-bold text-white"}>
           <GiSharpSmile className="text-skin-like" size={40} />
         </a>
       </Link>
-      <div className="flex items-center">
+      <div className="flex items-center relative">
         <Link href="/">
           <a className="mr-4 text-skin-base duration-150 hover:text-white">
             Home
@@ -58,6 +78,7 @@ const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
           <button
             className="flex items-center px-2 py-1 rounded-full text-white bg-gray-900
           duration-300 hover:bg-gray-700"
+            onClick={handleProfileClick}
           >
             <Image
               src={user.picture || EMPTY_IMAGE}
@@ -72,6 +93,25 @@ const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
             <a className="text-skin-like">Log In</a>
           </Link>
         )}
+        {showProfileOptions ? (
+          <div>
+            <ul className="absolute top-20 right-12 z-40 border-[1px] rounded-sm border-white">
+              {[
+                { title: "My Movies", route: "/me/my-movies" },
+                { title: "Settings", route: "/settings" },
+                { title: "Log Out", route: "/logout" },
+              ].map((item) => (
+                <li
+                  className="py-6 hover:bg-skin-main duration-150 cursor-pointer 
+                text-center px-12 bg-skin-secondary"
+                  key={item.title}
+                >
+                  <Link href={item.route}>{item.title}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <button
           className="ml-4 px-2 py-1 rounded-full text-white bg-gray-900 hover:bg-gray-800"
           onClick={() => setShowSearch(!showSearch)}
@@ -85,6 +125,7 @@ const Navbar = ({ setQuery, setPage }: NavBarPropType) => {
             className="border-2 border-gray-600 rounded-lg p-1 w-full focus:outline-none 
             focus:border-skin-input-field duration-300 bg-gray-700 text-white"
             type="text"
+            autoFocus
             placeholder="Search..."
             onKeyDown={handleSearchSubmit}
           />

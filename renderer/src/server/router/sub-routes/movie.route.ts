@@ -126,11 +126,9 @@ export const movieRouter = router({
       })
     )
     .query(async ({ input: { query, page } }) => {
-      console.log({ query, page });
       if (query) {
         const movie_filters = `movie_filters[type]=series&movie_filters[without_watched_movies]=no&movie_filters[countries_related]=no&movie_filters[genres_related]=no&filters[type]=movie`;
         const search_url = `${process.env.IMOVIE_BASE_URL}/search-advanced?${movie_filters}&keywords=${query}&page=${page}&per_page=16`;
-        console.log({ search_url });
         const { data: movies } = await axios.get(search_url);
 
         return movies.data;

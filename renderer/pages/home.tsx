@@ -35,13 +35,15 @@ function Home() {
       </Head>
       <Navbar setQuery={setQuery} setPage={setPage} />
       <div className="bg-skin-main pb-20 text-white">
-        <div className="py-12 border-b-[1px] border-white">
-          <h1 className="flex text-3xl ml-6">
-            <p>Search Results For:</p>
-            <p className="text-light-primary ml-5"> "{router.query?.query}"</p>
-          </h1>
-        </div>
-        <div className="flex min-h-screen mt-20">
+        {router.query?.query ? (
+          <div className="py-12 border-b-[1px] border-white">
+            <h1 className="flex text-3xl ml-6">
+              <p>Search Results For:</p>
+              <p className="text-light-primary ml-5">"{router.query?.query}"</p>
+            </h1>
+          </div>
+        ) : null}
+        <div className="flex min-h-screen pt-20">
           {isFetching ? (
             <div className="flex w-full justify-center items-center">
               <SyncLoader color="pink" size={30} />

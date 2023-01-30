@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import NavBar from "../../components/NavBar";
 import { trpc } from "../../src/utils/trpcNext";
@@ -42,7 +42,7 @@ const Movie = ({ title, poster, description }: MovieProps) => {
       {
         pathname: `/movie/${router.query.movieId}`,
         query: {
-          episode: router.query?.episode || 1,
+          episode: router.query?.episode || episodes[0]?.episode,
           season: season,
         },
       },
@@ -65,14 +65,44 @@ const Movie = ({ title, poster, description }: MovieProps) => {
       { shallow: true }
     );
   };
+  const handleVideoKeyDown = (e: KeyboardEvent<HTMLVideoElement>) => {
+    switch (e.code) {
+      case "KeyF":
+        e.currentTarget.requestFullscreen({
+          navigationUI: "hide",
+        });
+        break;
+      case "KeyH":
+        e.currentTarget.playbackRate = 2;
+        break;
+      case "KeyG":
+        e.currentTarget.playbackRate = 1.5;
+        break;
+      case "KeyA":
+        e.currentTarget.playbackRate -= 0.1;
+        break;
+      case "KeyD":
+        e.currentTarget.playbackRate += 0.1;
+        break;
+      case "KeyR":
+        e.currentTarget.playbackRate = 1;
+        break;
+
+      default:
+        break;
+    }
+  };
 
   useEffect(() => {
     if (!epsFetching) {
-      console.log(parseInt(router.query?.episode?.toString()) || 0);
+      if (!router.query?.episode) {
+        router.query.episode = episodes[0]?.episode + "";
+      }
       const highRes = getVideoFromEpisode(
-        parseInt(router.query?.episode?.toString()) || episodes[0]?.episode,
+        parseInt(router.query.episode.toString()),
         episodes
       );
+      console.log({ highRes, router: router.query.episode });
       setVideo(highRes?.src);
     }
   }, [epsFetching, router.query]);
@@ -91,11 +121,18 @@ const Movie = ({ title, poster, description }: MovieProps) => {
         ) : (
           <div className="bg-skin-main flex flex-col items-center w-full">
             <div
-              className="relative w-4/5  flex justify-center bg-black"
+              className="relative w-4/5 min-h-[50vh]  flex justify-center bg-black"
               ref={divRef}
             >
-              <video className="focus:outline-none" src={video} controls />
-              {movieDetails.isTvShow ? (
+              <video
+                className="focus:outline-none"
+                src={video}
+                width={"100%"}
+                controls
+                autoPlay
+                onKeyDown={handleVideoKeyDown}
+              />
+              {movieDetails?.isTvShow ? (
                 <button
                   className="absolute top-0 right-0 p-5 z-10"
                   onClick={() => setShowEpisodes(!showEpisodes)}
@@ -103,7 +140,7 @@ const Movie = ({ title, poster, description }: MovieProps) => {
                   <FaBars size={40} />
                 </button>
               ) : null}
-              {movieDetails.isTvShow && showEpisodes && (
+              {movieDetails?.isTvShow && showEpisodes && (
                 <div className="absolute top-0 right-0 w-1/3 max-h-full overflow-y-scroll bg-gray-800/50 backdrop-blur-sm text-white p-4">
                   <h2 className="text-2xl font-medium">Seasons</h2>
                   <ul className="mt-8 flex">
@@ -152,15 +189,15 @@ const Movie = ({ title, poster, description }: MovieProps) => {
                 </div>
               )}
             </div>
-            <div className="flex justify-between pl-5 pt-5">
-              <div className="w-64 h-90 relative">
+            <div className="flex justify-between w-4/5 min-h-[250px] pl-5 pt-5 ">
+              <div className="w-64 relative">
                 <Image
                   layout="fill"
                   className="object-contain"
                   src={
-                    movieDetails?.poster ||
-                    movieDetails.posters?.data[400] ||
-                    movieDetails.posters?.data[200]
+                    movieDetails?.posters?.data[400] ||
+                    movieDetails?.posters?.data[200] ||
+                    movieDetails?.poster
                   }
                   alt={title}
                 />
