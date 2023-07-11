@@ -1,0 +1,9 @@
+node_modules
+dist
+out
+*.log*
+.env
+src/api/utils/constants.ts
+package-lock.json
+drizzle/
+build/
