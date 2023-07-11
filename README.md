@@ -1,10 +1,26 @@
-# jive-movies
+# Features:
 
-An Electron application with React and TypeScript
+- register/login/logout
+- favorite movies CRUD
+- watching movies and tv shows
 
-## Recommended IDE Setup
+# Tech Stack
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+## Back-End:
+
+- TRPC (<a href="https://github.com/jsonnull/electron-trpc">electron-trpc</a>) - for communicating between main and renderer processes
+- electron-store - alternative for http cookies in electron
+- supabase - postgres database
+- upstash - redis database
+- zod - validation
+
+## Front-End
+
+- tailwindcss - only way of writing css
+- shadcn - tailwind based ui library😍
+- react-hook-form with zodResolver - forms
+  <br>
+  The app is bootstrapped with <a href="https://electron-vite.org/">electron-vite</a>
 
 ## Project Setup
 
