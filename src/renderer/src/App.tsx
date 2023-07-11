@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Register from './pages/register'
+import Login from './pages/login'
 import Home from './pages/home'
 import { nanoid } from 'nanoid'
 import { Route, HashRouter as Router, Routes } from 'react-router-dom'
@@ -16,6 +17,7 @@ const RoutesObj = [
   { path: '/', element: <Home /> },
   { path: '/movie/:movieId', element: <MovieDetails /> },
   { path: '/user/register', element: <Register /> },
+  { path: '/user/login', element: <Login /> },
   { path: '/user/logout', element: <Logout /> },
   { path: '/user/favorite-movies', element: <FavoriteMovies /> }
 ]

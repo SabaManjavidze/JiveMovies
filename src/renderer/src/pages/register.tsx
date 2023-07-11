@@ -4,7 +4,7 @@ import {
   registerSchemaForm,
   registerSchemaFormType
 } from '../../../api/utils/types/zodTypes'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import {
@@ -180,14 +180,14 @@ const Register = () => {
               </form>
             </Form>
             <div className="flex items-center justify-between pt-7 pb-4">
-              <a href="#!" className="underline">
-                Forgot password?
-              </a>
               <p className="text-sm font-semibold">
                 Already have an account?{' '}
-                <a href="/login" className="inline text-purple-400 underline">
+                <Link
+                  to="/user/login"
+                  className="inline text-purple-400 underline"
+                >
                   Login
-                </a>
+                </Link>
               </p>
             </div>
           </div>

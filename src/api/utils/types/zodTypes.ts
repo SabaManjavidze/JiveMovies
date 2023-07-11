@@ -3,6 +3,11 @@ import { z } from 'zod'
 export const zodEmail = z.string().email()
 export const zodPassword = z.string().min(6)
 
+export const loginSchema = z.object({
+  email: zodEmail,
+  password: zodPassword
+})
+export type loginSchemaType = z.infer<typeof loginSchema>
 export const registerSchemaForm = z.object({
   email: zodEmail,
   password: zodPassword,

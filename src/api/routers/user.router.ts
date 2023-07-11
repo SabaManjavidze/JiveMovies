@@ -18,7 +18,10 @@ import { NewUser, UserType, users } from '../../db/schema'
 const createSession = async (userId: string) => {
   const sessionId = nanoid()
   Storage.set(COOKIE_NAME, sessionId)
-  await redis.set(sessionId, JSON.stringify({ userId }))
+  await redis.set(
+    sessionId,
+    JSON.stringify({ userId, settings: { lang: 'ENG' } })
+  )
 }
 
 const UserFragment = {
@@ -51,22 +54,8 @@ export const userRouter = router({
             ]
           }
         }
-        if (!result?.password) {
-          //return error indicating that user is setting the password
-          //then handle it on the client by redirecting
-          // 1. verifying the email
-          // 2. double entering password (default input and re-type input)
-          return {
-            errors: [
-              {
-                field: 'password',
-                message: 'verify your email to set the password'
-              }
-            ]
-          }
-        }
 
-        const passwordMatch = await pbkdf2.compare(result.password, password)
+        const passwordMatch = await pbkdf2.compare(password, result.password)
         if (!passwordMatch) {
           return {
             errors: [

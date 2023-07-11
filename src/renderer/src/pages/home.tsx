@@ -15,7 +15,7 @@ function Home() {
   useEffect(() => {
     if (!isLoading) {
       if (error) {
-        navigate('/user/register')
+        navigate('/user/login')
         return
       }
       if (!query || !page) {

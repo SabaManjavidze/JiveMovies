@@ -133,8 +133,8 @@ export const movieRouter = router({
   getEpisodes: publicProcedure
     .input(
       z.object({
-        season: z.string().min(1),
-        movieId: z.string().min(1)
+        season: z.string().default('1'),
+        movieId: z.string()
       })
     )
     .query(async ({ input: { season, movieId } }) => {
@@ -158,17 +158,19 @@ export const movieRouter = router({
         req.session.userId
       )
       if (req?.session?.userId) {
-        const { season, episode, time } =
-          await db.query.usersToMovies.findFirst({
-            where: (record, { and, eq }) =>
-              and(
-                eq(record.userId, req.session.userId),
-                eq(record.movieId, movieId)
-              )
-          })
-        return Object.assign(newMovie, {
-          userProgress: { season, episode, time }
-        }) as typeof newMovie & { userProgress: UserProgress | null }
+        const record = await db.query.usersToMovies.findFirst({
+          where: (record, { and, eq }) =>
+            and(
+              eq(record.userId, req.session.userId),
+              eq(record.movieId, movieId)
+            )
+        })
+        if (record) {
+          const { season, episode, time } = record
+          return Object.assign(newMovie, {
+            userProgress: { season, episode, time }
+          }) as typeof newMovie & { userProgress: UserProgress | null }
+        }
       }
       return Object.assign(newMovie, {
         userProgress: null
